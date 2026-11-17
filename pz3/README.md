@@ -123,7 +123,7 @@ blog/
 
 ---
 
-## 🚀 Развёртывание через Docker Compose
+## Развёртывание через Docker Compose
 
 1. Создайте файл `.env`:
    ```bash
