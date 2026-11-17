@@ -1,0 +1,160 @@
+{% extends "tasks/base.html" %}
+
+{% block page_header %}
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+    <div>
+      <h1 class="h2 font-weight-bold mb-1">Мои задачи</h1>
+      <p class="text-muted mb-0">Управляйте вашими текущими целями и дедлайнами</p>
+    </div>
+    <div class="mt-3 mt-md-0">
+      <a href="{% url 'tasks:new_task' %}" class="btn btn-success font-weight-bold shadow-sm">
+        + Новая задача
+      </a>
+    </div>
+  </div>
+{% endblock page_header %}
+
+{% block content %}
+  <!-- Панель фильтров и поиска -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-3">
+      <div class="row align-items-center">
+        <div class="col-lg-6 mb-3 mb-lg-0">
+          <div class="btn-group btn-group-sm w-100 w-sm-auto" role="group" aria-label="Фильтр задач">
+            <a href="{% url 'tasks:task_list' %}?filter=all"
+               class="btn {% if current_filter == 'all' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+              Все
+            </a>
+            <a href="{% url 'tasks:task_list' %}?filter=active"
+               class="btn {% if current_filter == 'active' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+              Активные ⏳
+            </a>
+            <a href="{% url 'tasks:task_list' %}?filter=completed"
+               class="btn {% if current_filter == 'completed' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+              Выполненные ✅
+            </a>
+            <a href="{% url 'tasks:task_list' %}?filter=overdue"
+               class="btn {% if current_filter == 'overdue' %}btn-danger{% else %}btn-outline-danger{% endif %}">
+              Просроченные ⚠️
+            </a>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <form method="get" action="{% url 'tasks:task_list' %}" class="form-inline justify-content-lg-end">
+            <input type="hidden" name="filter" value="{{ current_filter }}">
+            <div class="input-group input-group-sm w-100" style="max-width: 320px;">
+              <input type="text" name="q" class="form-control" placeholder="Поиск по задачам..." value="{{ search_query }}">
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="submit">Найти</button>
+                {% if search_query %}
+                  <a href="{% url 'tasks:task_list' %}?filter={{ current_filter }}" class="btn btn-outline-danger">✕</a>
+                {% endif %}
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Список задач -->
+  {% if tasks %}
+    <div class="row">
+      {% for task in tasks %}
+        <div class="col-12 mb-3">
+          <div class="card task-card border-0 shadow-sm {% if task.completed %}task-completed{% elif task.is_overdue %}task-overdue border-danger{% endif %}">
+            <div class="card-body">
+              <div class="d-flex flex-column flex-md-row justify-content-between align-items-start">
+                <div class="pr-md-3 mb-2 mb-md-0" style="flex: 1;">
+                  <div class="d-flex align-items-center mb-1 flex-wrap">
+                    <h5 class="task-title font-weight-bold mb-0 mr-2">{{ task.title }}</h5>
+
+                    <!-- Приоритет -->
+                    {% if task.priority == 'high' %}
+                      <span class="badge badge-danger mr-1" title="Высокий приоритет">Высокий ⚡</span>
+                    {% elif task.priority == 'normal' %}
+                      <span class="badge badge-primary mr-1" title="Обычный приоритет">Обычный 📌</span>
+                    {% else %}
+                      <span class="badge badge-secondary mr-1" title="Низкий приоритет">Низкий 💤</span>
+                    {% endif %}
+
+                    <!-- Состояние -->
+                    {% if task.completed %}
+                      <span class="badge badge-success">Выполнено ✅</span>
+                    {% elif task.is_overdue %}
+                      <span class="badge badge-danger">Просрочено ⚠️</span>
+                    {% else %}
+                      <span class="badge badge-info">В работе ⏳</span>
+                    {% endif %}
+                  </div>
+
+                  {% if task.description %}
+                    <p class="text-muted mb-2 small" style="white-space: pre-wrap;">{{ task.description }}</p>
+                  {% endif %}
+
+                  <div class="text-muted small">
+                    <span class="mr-3">
+                      📅 Создана: {{ task.date_added|date:"d.m.Y H:i" }}
+                    </span>
+                    {% if task.due_date %}
+                      <span class="{% if task.is_overdue %}text-danger font-weight-bold{% endif %}">
+                        ⏰ Срок: {{ task.due_date|date:"d.m.Y H:i" }}
+                        {% if task.is_overdue %} (Просрочено!){% endif %}
+                      </span>
+                    {% else %}
+                      <span>⏰ Срок: Не назначен</span>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- Кнопки действий -->
+                <div class="d-flex flex-nowrap align-items-center mt-2 mt-md-0">
+                  <!-- Переключение статуса (только методом POST) -->
+                  <form method="post" action="{% url 'tasks:toggle_task' task.id %}" class="d-inline mr-1">
+                    {% csrf_token %}
+                    {% if task.completed %}
+                      <button type="submit" class="btn btn-sm btn-outline-warning" title="Вернуть задачу в работу">
+                        Вернуть ↩
+                      </button>
+                    {% else %}
+                      <button type="submit" class="btn btn-sm btn-outline-success" title="Отметить как выполненную">
+                        Выполнить ✓
+                      </button>
+                    {% endif %}
+                  </form>
+
+                  <!-- Редактирование -->
+                  <a href="{% url 'tasks:edit_task' task.id %}" class="btn btn-sm btn-outline-primary mr-1" title="Редактировать">
+                    ✏️
+                  </a>
+
+                  <!-- Удаление -->
+                  <a href="{% url 'tasks:delete_task' task.id %}" class="btn btn-sm btn-outline-danger" title="Удалить">
+                    🗑
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card border-0 shadow-sm text-center py-5">
+      <div class="card-body">
+        <h3 class="text-muted mb-3">Задач пока нет ¯\_(ツ)_/¯</h3>
+        <p class="text-muted mb-4">
+          {% if search_query or current_filter != 'all' %}
+            По выбранному фильтру или запросу ничего не найдено.
+          {% else %}
+            Создайте свою первую задачу прямо сейчас и начните наводить порядок в делах!
+          {% endif %}
+        </p>
+        <a href="{% url 'tasks:new_task' %}" class="btn btn-success btn-lg">
+          + Создать задачу
+        </a>
+      </div>
+    </div>
+  {% endif %}
+{% endblock content %}

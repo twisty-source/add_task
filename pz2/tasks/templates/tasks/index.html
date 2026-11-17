@@ -1,0 +1,59 @@
+{% extends "tasks/base.html" %}
+
+{% block page_header %}
+  <div class="jumbotron bg-white shadow-sm rounded p-5 my-3">
+    <h1 class="display-4 font-weight-bold">Управляйте своими задачами эффективно!</h1>
+    <p class="lead text-muted">
+      Простой и надежный сервис для планирования дел, установки дедлайнов, контроля приоритетов и отслеживания прогресса.
+    </p>
+    <hr class="my-4">
+    {% if user.is_authenticated %}
+      <p class="mb-4">
+        У вас в работе: <strong>{{ active_tasks }}</strong> из <strong>{{ total_tasks }}</strong> задач.
+      </p>
+      <a class="btn btn-primary btn-lg mr-2" href="{% url 'tasks:task_list' %}" role="button">Перейти к задачам &raquo;</a>
+      <a class="btn btn-success btn-lg" href="{% url 'tasks:new_task' %}" role="button">+ Создать задачу</a>
+    {% else %}
+      <p class="mb-4">
+        Зарегистрируйтесь бесплатно, чтобы начать создавать списки дел с гибкими приоритетами и уведомлениями о сроках.
+      </p>
+      <a class="btn btn-primary btn-lg mr-2" href="{% url 'users:register' %}" role="button">Начать пользоваться &raquo;</a>
+      <a class="btn btn-outline-secondary btn-lg" href="{% url 'users:login' %}" role="button">Войти в аккаунт</a>
+    {% endif %}
+  </div>
+{% endblock page_header %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 border-0 shadow-sm p-3">
+        <div class="card-body">
+          <h5 class="card-title font-weight-bold">⚡ Приоритеты задач</h5>
+          <p class="card-text text-muted">
+            Разделяйте дела на низкий, обычный и высокий приоритет, чтобы фокусироваться на самом важном в первую очередь.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 border-0 shadow-sm p-3">
+        <div class="card-body">
+          <h5 class="card-title font-weight-bold">⏰ Контроль дедлайнов</h5>
+          <p class="card-text text-muted">
+            Устанавливайте точные сроки выполнения. Просроченные задачи будут наглядно выделены специальным индикатором.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 border-0 shadow-sm p-3">
+        <div class="card-body">
+          <h5 class="card-title font-weight-bold">🔒 Безопасность данных</h5>
+          <p class="card-text text-muted">
+            Каждый пользователь видит и редактирует исключительно свои собственные задачи. Полная изоляция профилей.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
