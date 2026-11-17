@@ -1,0 +1,10 @@
+.git
+.env
+.venv
+blog_env
+tm_env
+ll_env
+__pycache__
+*.py[cod]
+db.sqlite3
+staticfiles

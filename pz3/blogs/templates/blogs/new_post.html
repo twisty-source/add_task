@@ -1,0 +1,28 @@
+{% extends "blogs/base.html" %}
+{% load bootstrap4 %}
+
+{% block page_header %}
+  <div class="d-flex justify-content-between align-items-center">
+    <h1 class="h2 font-weight-bold mb-0">Новая публикация</h1>
+    <a href="{% url 'blogs:index' %}" class="btn btn-outline-secondary btn-sm">&larr; Назад к блогу</a>
+  </div>
+{% endblock page_header %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+          <form method="post" action="{% url 'blogs:new_post' %}" class="form">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <div class="mt-4 pt-3 border-top d-flex justify-content-between">
+              <a href="{% url 'blogs:index' %}" class="btn btn-outline-secondary">Отмена</a>
+              <button name="submit" class="btn btn-success font-weight-bold px-4">Опубликовать</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

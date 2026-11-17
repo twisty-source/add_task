@@ -1,0 +1,24 @@
+{% extends "blogs/base.html" %}
+
+{% block page_header %}
+  <div class="text-center py-4">
+    <h1 class="h2 font-weight-bold mb-2">Вы вышли из системы</h1>
+    <p class="text-muted">Спасибо за посещение нашего блога!</p>
+  </div>
+{% endblock page_header %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-md-6 text-center">
+      <div class="card border-0 shadow-sm p-4">
+        <div class="card-body">
+          <p class="lead mb-4">Сеанс автора успешно завершен.</p>
+          <div>
+            <a href="{% url 'users:login' %}" class="btn btn-primary mr-2">Войти снова</a>
+            <a href="{% url 'blogs:index' %}" class="btn btn-outline-secondary">К публикациям</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

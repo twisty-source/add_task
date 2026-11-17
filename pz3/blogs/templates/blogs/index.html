@@ -1,0 +1,80 @@
+{% extends "blogs/base.html" %}
+
+{% block page_header %}
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center py-2">
+    <div>
+      <h1 class="h2 font-weight-bold mb-1">Лента публикаций</h1>
+      <p class="text-muted mb-0">Читайте статьи пользователей и делитесь своими мыслями</p>
+    </div>
+    {% if user.is_authenticated %}
+      <div class="mt-3 mt-md-0">
+        <a href="{% url 'blogs:new_post' %}" class="btn btn-success font-weight-bold shadow-sm">
+          + Написать публикацию
+        </a>
+      </div>
+    {% endif %}
+  </div>
+{% endblock page_header %}
+
+{% block content %}
+  {% if posts %}
+    <div class="row">
+      {% for post in posts %}
+        <div class="col-12 mb-4">
+          <div class="card post-card border-0 shadow-sm">
+            <div class="card-body p-4">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <h3 class="h4 card-title font-weight-bold mb-0">
+                  <a href="{% url 'blogs:post_detail' post.id %}" class="text-dark text-decoration-none">
+                    {{ post.title }}
+                  </a>
+                </h3>
+
+                {% if user.is_authenticated and user == post.owner %}
+                  <div class="btn-group btn-group-sm">
+                    <a href="{% url 'blogs:edit_post' post.id %}" class="btn btn-outline-primary" title="Редактировать">
+                      ✏️ Изменить
+                    </a>
+                    <a href="{% url 'blogs:delete_post' post.id %}" class="btn btn-outline-danger" title="Удалить">
+                      🗑
+                    </a>
+                  </div>
+                {% endif %}
+              </div>
+
+              <div class="text-muted small mb-3">
+                <span class="mr-3">👤 Автор: <strong>{{ post.owner.username }}</strong></span>
+                <span>📅 Опубликовано: {{ post.date_added|date:"d.m.Y H:i" }}</span>
+              </div>
+
+              <div class="card-text post-content text-secondary">
+                {{ post.text|linebreaks }}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card border-0 shadow-sm text-center py-5">
+      <div class="card-body">
+        <h3 class="text-muted mb-3">Публикаций пока нет ¯\_(ツ)_/¯</h3>
+        <p class="text-muted mb-4">
+          Станьте первым автором в нашем блоге и опубликуйте интересную статью!
+        </p>
+        {% if user.is_authenticated %}
+          <a href="{% url 'blogs:new_post' %}" class="btn btn-success btn-lg">
+            + Создать первую публикацию
+          </a>
+        {% else %}
+          <a href="{% url 'users:login' %}" class="btn btn-primary btn-lg mr-2">
+            Войти и написать
+          </a>
+          <a href="{% url 'users:register' %}" class="btn btn-outline-secondary btn-lg">
+            Зарегистрироваться
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+{% endblock content %}

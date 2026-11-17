@@ -1,0 +1,32 @@
+{% extends "blogs/base.html" %}
+
+{% block page_header %}
+  <div class="d-flex justify-content-between align-items-center">
+    <a href="{% url 'blogs:index' %}" class="btn btn-outline-secondary btn-sm">&larr; Назад ко всем записям</a>
+    {% if user.is_authenticated and user == post.owner %}
+      <div class="btn-group btn-group-sm">
+        <a href="{% url 'blogs:edit_post' post.id %}" class="btn btn-outline-primary">✏️ Редактировать</a>
+        <a href="{% url 'blogs:delete_post' post.id %}" class="btn btn-outline-danger">🗑 Удалить</a>
+      </div>
+    {% endif %}
+  </div>
+{% endblock page_header %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+      <div class="card border-0 shadow-sm p-4">
+        <div class="card-body">
+          <h1 class="h2 font-weight-bold mb-3">{{ post.title }}</h1>
+          <div class="text-muted small mb-4 pb-3 border-bottom">
+            <span class="mr-3">👤 Автор: <strong>{{ post.owner.username }}</strong></span>
+            <span>📅 Дата: {{ post.date_added|date:"d E Y, H:i" }}</span>
+          </div>
+          <div class="post-content text-dark" style="font-size: 1.1rem; line-height: 1.8;">
+            {{ post.text|linebreaks }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
